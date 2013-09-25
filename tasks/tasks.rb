@@ -53,9 +53,12 @@ namespace :burek do
       new_translations.each do |key,value|
         cur_hash = translations_hash[locale.dup.force_encoding("UTF-8")]
         path_parts = key.split("/")
-        item_name = path_parts.pop
 
         regular_translation_key = path_parts.join('.')
+
+
+        item_name = path_parts.pop
+
         to_replace[value] = regular_translation_key
 
         path_parts.each do |item|
@@ -75,13 +78,34 @@ namespace :burek do
     puts "TO REPLACE"
     puts to_replace
 
+    search_folders.each do |folder|
+      Dir.glob(folder) do |file_name|
+        unless File.directory?(file_name)
+          file = File.open(file_name, 'r')
+          contents = file.read
+          matches = find_burek_calls(contents)
+          matches.each do |value|
+            regex_str = "[^a-zA-Z0-9_]burek[ \\t]*\\([ \\t]*\\'#{value}\\'[^\\)]*\\)"
+            puts "REPLACE! #{value} with #{to_replace[value]} -> #{regex_str}"
+            contents.gsub!(Regexp.new(regex_str),"t('#{to_replace[value]}')")
+          end
+          file.close
+
+          unless matches.empty?
+            puts contents
+            out_file = File.open(file_name, 'w')
+            out_file.print(contents)
+            out_file.close
+          end
+        end
+      end
+    end
+
   end
 
     # Matches translation calls with regex
   def find_burek_calls(string)
-    matches = string.scan(/[^a-zA-Z0-9_]burek[ \t]*\([ \t]*\'(?<key>[^\)]*)\'[^\)]*\)/).flatten 
-    matches = matches | string.scan(/[^a-zA-Z0-9_]burek[ \t]*\([ \t]*\"(?<key>[^\)]*)\"[^\)]*\)/).flatten
-    matches
+    string.scan(/[^a-zA-Z0-9_]burek[ \t]*\([ \t]*\'(?<key>[^\)]*)\'[^\)]*\)/).flatten 
   end
   
 end
