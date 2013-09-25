@@ -41,6 +41,7 @@ namespace :burek do
       end
     end
 
+    to_replace = {}
     # Create files for each locale
     locales.each do |locale|
       translations_hash = {}
@@ -53,6 +54,10 @@ namespace :burek do
         cur_hash = translations_hash[locale.dup.force_encoding("UTF-8")]
         path_parts = key.split("/")
         item_name = path_parts.pop
+
+        regular_translation_key = path_parts.join('.')
+        to_replace[value] = regular_translation_key
+
         path_parts.each do |item|
           cur_hash[item] = {} unless cur_hash.has_key?(item)
 
@@ -61,9 +66,14 @@ namespace :burek do
         cur_hash[item_name] = ( locale == locales.first ? value.dup.force_encoding("UTF-8") : translation_placeholder )
       end
 
-      puts translations_hash.to_yaml
-      #File.write(translation_path + "test.#{locale}.yml", translations_hash.to_yaml) #Store
+      yaml = translations_hash.to_yaml
+      clean_yaml = yaml.lines.to_a[1..-1].join
+      puts clean_yaml
+      File.write(translation_path + "test.#{locale}.yml", clean_yaml) #Store
     end
+
+    puts "TO REPLACE"
+    puts to_replace
 
   end
 
