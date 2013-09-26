@@ -1,3 +1,5 @@
+require 'view_helpers'
+
 module Burek
   class Railtie < Rails::Railtie
     initializer "view_helpers" do
@@ -6,12 +8,6 @@ module Burek
 
     rake_tasks do
       require_relative '../tasks/tasks'
-    end
-  end
-
-  module ViewHelpers
-    def burek(key)
-      "BUREK GEM! #{key}"
     end
   end
 end
