@@ -10,25 +10,19 @@ namespace :burek do
 
     # Create translations folder if missing
     unless File.directory?(Burek.config(:translations_path))
-      Dir.mkdir(translation_path)
+      Dir.mkdir(Burek.config(:translations_path))
     end
 
     new_translations = {}
     # Iterate all defined subfolders subfolders
     for_each_file do |file_name|      
       File.open(file_name, "rb") do |file|
-        path = file_name.split('/')
-        path.delete_if do |item|
-          Burek.config(:ignore_folders_for_key).include? item
-        end
-        path.last.gsub!(/\.(.*?)$/,'').gsub!(/^_/,'') #strip extenison from file name
-        filtered_path = path.join('/')
         contents = file.read
-        puts filtered_path
+
+        filtered_path = Burek::Core.filter_path(file_name)
         matches = Burek::Parser.find_burek_calls(contents)
         matches.each do |value|
           key = filtered_path + "/" + value.downcase.gsub(' ','_')
-          puts key
           new_translations[key] = value
         end
       end

@@ -23,5 +23,14 @@ module Burek
       return translation_file
     end
 
+    def self.filter_path(file_name)
+      path = file_name.split('/')
+      path.delete_if do |item|
+        Burek.config(:ignore_folders_for_key).include? item
+      end
+      path.last.gsub!(/\.(.*?)$/,'').gsub!(/^_/,'') #strip extenison from file name
+      return path.join('/')
+    end
+
   end
 end
