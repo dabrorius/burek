@@ -46,8 +46,9 @@ namespace :burek do
     # Create files for each locale
     locales.each do |locale|
       translations_hash = {}
-      if File.exists?(translation_path + "test.#{locale}.yml")
-        translations_hash = YAML::load_file(translation_path + "test.#{locale}.yml") #Load
+      translation_file = translation_path + "test.#{locale}.yml"
+      if File.exists?(translation_file)
+        translations_hash = YAML::load_file(translation_file) #Load
       end
 
       translations_hash[locale.dup.force_encoding("UTF-8")] = {} unless translations_hash.has_key?(locale.dup.force_encoding("UTF-8"))
@@ -70,10 +71,9 @@ namespace :burek do
         cur_hash[item_name] = ( locale == locales.first ? value.dup.force_encoding("UTF-8") : translation_placeholder )
       end
 
-      yaml = translations_hash.to_yaml
-      clean_yaml = yaml.lines.to_a[1..-1].join
+      clean_yaml = Burek::Parser.yaml_to_i18n_file(translations_hash.to_yaml) 
       puts clean_yaml
-      File.write(translation_path + "test.#{locale}.yml", clean_yaml) #Store
+      File.write(translation_file, clean_yaml) #Store
     end
 
     # Replace all burek calls with regular translation calls
