@@ -6,7 +6,7 @@ require 'config'
 namespace :burek do
 
   desc "Task passes through all views and reports any missing translations"
-  task :fetch, [:locale] => [:environment] do |t,args|
+  task :fetch do
 
     # Create translations folder if missing
     unless File.directory?(Burek.config(:translations_path))
