@@ -1,4 +1,5 @@
 require 'yaml'
+require 'parser'
 
 namespace :burek do
 
@@ -31,7 +32,7 @@ namespace :burek do
           path.pop
           filtered_path = path.join('/')
           contents = file.read
-          matches = find_burek_calls(contents)
+          matches = Burek::Parser.find_burek_calls(contents)
           matches.each do |value|
             key = filtered_path + "/" + value.downcase.gsub(' ','_')
             puts key
@@ -75,37 +76,25 @@ namespace :burek do
       File.write(translation_path + "test.#{locale}.yml", clean_yaml) #Store
     end
 
-    puts "TO REPLACE"
-    puts to_replace
-
+    # Replace all burek calls with regular translation calls
     search_folders.each do |folder|
       Dir.glob(folder) do |file_name|
-        unless File.directory?(file_name)
-          file = File.open(file_name, 'r')
-          contents = file.read
-          matches = find_burek_calls(contents)
-          matches.each do |value|
-            regex_str = "[^a-zA-Z0-9_]burek[ \\t]*\\([ \\t]*\\'#{value}\\'[^\\)]*\\)"
-            puts "REPLACE! #{value} with #{to_replace[value]} -> #{regex_str}"
-            contents.gsub!(Regexp.new(regex_str),"t('#{to_replace[value]}')")
-          end
-          file.close
 
-          unless matches.empty?
-            puts contents
-            out_file = File.open(file_name, 'w')
-            out_file.print(contents)
-            out_file.close
+      unless File.directory?(file_name)
+        File.open(file_name, 'r') do |file|
+          content = file.read
+          processed_content = Burek::Parser.replace_burek_calls(content, to_replace)
+          unless processed_content.nil?
+            File.open(file_name, 'w') do |output_file|
+              output_file.print processed_content
+            end
           end
         end
       end
+
+      end
     end
 
-  end
-
-    # Matches translation calls with regex
-  def find_burek_calls(string)
-    string.scan(/[^a-zA-Z0-9_]burek[ \t]*\([ \t]*\'(?<key>[^\)]*)\'[^\)]*\)/).flatten 
   end
   
 end
