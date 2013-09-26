@@ -9,7 +9,7 @@ module Burek
       matches = Burek::Parser.find_burek_calls(contents)
       matches.each do |value|
         regex_str = "[^a-zA-Z0-9_]burek[ \\t]*\\([ \\t]*\\'#{value}\\'[^\\)]*\\)"
-        contents.gsub!(Regexp.new(regex_str),"t('#{to_replace[value]}')")
+        contents.gsub!(Regexp.new(regex_str)," t('#{to_replace[value]}')")
       end
 
       return contents unless matches.empty?
