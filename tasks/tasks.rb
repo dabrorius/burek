@@ -15,24 +15,21 @@ namespace :burek do
 
     new_translations = {}
     # Iterate all defined subfolders subfolders
-    Burek.config(:search_folders).each do |folder|
-      Dir.glob(folder) do |file_name|
-        unless File.directory?(file_name)
-          file = File.open(file_name, "rb")
-          path = file_name.split('/')
-          path.delete_if do |item|
-            Burek.config(:ignore_folders_for_key).include? item
-          end
-          path.last.gsub!(/\.(.*?)$/,'').gsub!(/^_/,'') #strip extenison from file name
-          filtered_path = path.join('/')
-          contents = file.read
-          puts filtered_path
-          matches = Burek::Parser.find_burek_calls(contents)
-          matches.each do |value|
-            key = filtered_path + "/" + value.downcase.gsub(' ','_')
-            puts key
-            new_translations[key] = value
-          end
+    for_each_file do |file_name|      
+      File.open(file_name, "rb") do |file|
+        path = file_name.split('/')
+        path.delete_if do |item|
+          Burek.config(:ignore_folders_for_key).include? item
+        end
+        path.last.gsub!(/\.(.*?)$/,'').gsub!(/^_/,'') #strip extenison from file name
+        filtered_path = path.join('/')
+        contents = file.read
+        puts filtered_path
+        matches = Burek::Parser.find_burek_calls(contents)
+        matches.each do |value|
+          key = filtered_path + "/" + value.downcase.gsub(' ','_')
+          puts key
+          new_translations[key] = value
         end
       end
     end
@@ -79,24 +76,28 @@ namespace :burek do
     end
 
     # Replace all burek calls with regular translation calls
-    Burek.config(:search_folders).each do |folder|
-      Dir.glob(folder) do |file_name|
-
-        unless File.directory?(file_name)
-          File.open(file_name, 'r') do |file|
-            content = file.read
-            processed_content = Burek::Parser.replace_burek_calls(content, to_replace)
-            unless processed_content.nil?
-              File.open(file_name, 'w') do |output_file|
-                output_file.print processed_content
-              end
-            end
+    for_each_file do |file_name|      
+      File.open(file_name, 'r') do |file|
+        content = file.read
+        processed_content = Burek::Parser.replace_burek_calls(content, to_replace)
+        unless processed_content.nil?
+          File.open(file_name, 'w') do |output_file|
+            output_file.print processed_content
           end
         end
-
       end
     end
 
   end
   
+end
+
+def for_each_file
+  Burek.config(:search_folders).each do |folder|
+    Dir.glob(folder) do |file_name|
+      unless File.directory?(file_name)
+         yield file_name
+      end
+    end
+  end
 end
