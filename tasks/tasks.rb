@@ -32,8 +32,8 @@ namespace :burek do
           end
           path.last.gsub!(/\.(.*?)$/,'').gsub!(/^_/,'') #strip extenison from file name
           filtered_path = path.join('/')
-
           contents = file.read
+          puts filtered_path
           matches = Burek::Parser.find_burek_calls(contents)
           matches.each do |value|
             key = filtered_path + "/" + value.downcase.gsub(' ','_')
@@ -77,12 +77,13 @@ namespace :burek do
 
         cur_hash = translations_hash[locale.dup.force_encoding("UTF-8")]
 
+        path_parts_no_filename = path_parts[0..-2]
         # Save info for replacing burek calls with translation calls
-        regular_translation_key = key.gsub('/','.')
+        regular_translation_key = path_parts_no_filename.join('.') + ".#{item_name}"
         to_replace[value] = regular_translation_key
 
         # Nest in hashes
-        path_parts.each do |item|
+        path_parts_no_filename.each do |item|
           cur_hash[item] = {} unless cur_hash.has_key?(item)
           cur_hash = cur_hash[item]
         end
