@@ -11,6 +11,7 @@ namespace :burek do
     translation_path = './config/locales/burek/'
     translation_placeholder = 'TODO'
     ignore_folders_for_key = ['.','app']
+    subfolder_depth = 2
     locales = ['en','fi']
     # =========
 
@@ -29,8 +30,9 @@ namespace :burek do
           path.delete_if do |item|
             ignore_folders_for_key.include? item
           end
-          path.pop
+          path.last.gsub!(/\.(.*?)$/,'').gsub!(/^_/,'') #strip extenison from file name
           filtered_path = path.join('/')
+
           contents = file.read
           matches = Burek::Parser.find_burek_calls(contents)
           matches.each do |value|
@@ -44,36 +46,56 @@ namespace :burek do
 
     to_replace = {}
     # Create files for each locale
-    locales.each do |locale|
-      translations_hash = {}
-      translation_file = translation_path + "test.#{locale}.yml"
-      if File.exists?(translation_file)
-        translations_hash = YAML::load_file(translation_file) #Load
-      end
-
-      translations_hash[locale.dup.force_encoding("UTF-8")] = {} unless translations_hash.has_key?(locale.dup.force_encoding("UTF-8"))
+    locales.each do |locale|      
       new_translations.each do |key,value|
-        cur_hash = translations_hash[locale.dup.force_encoding("UTF-8")]
+
         path_parts = key.split("/")
-
-        regular_translation_key = path_parts.join('.')
-
-
         item_name = path_parts.pop
 
+        # Figure out file path
+        translation_file = translation_path 
+
+        path_parts.each_with_index do |item, index|
+          if index == subfolder_depth || item == path_parts.last
+            translation_file += "#{item}.#{locale}.yml"
+            break
+          else
+            translation_file += "/#{item}/"
+            unless File.directory?(translation_file)
+              Dir.mkdir(translation_file)
+            end
+          end
+        end
+
+        # Load from file
+        if File.exists?(translation_file)
+          translations_hash = YAML::load_file(translation_file) #Load
+        else
+          translations_hash = {}
+          translations_hash[locale.dup.force_encoding("UTF-8")] = {} 
+        end
+
+        cur_hash = translations_hash[locale.dup.force_encoding("UTF-8")]
+
+        # Save info for replacing burek calls with translation calls
+        regular_translation_key = key.gsub('/','.')
         to_replace[value] = regular_translation_key
 
+        # Nest in hashes
         path_parts.each do |item|
           cur_hash[item] = {} unless cur_hash.has_key?(item)
-
           cur_hash = cur_hash[item]
         end
+        # Set value
         cur_hash[item_name] = ( locale == locales.first ? value.dup.force_encoding("UTF-8") : translation_placeholder )
+
+        # Save to file
+        clean_yaml = Burek::Parser.yaml_to_i18n_file(translations_hash.to_yaml) 
+        puts clean_yaml
+        File.write(translation_file, clean_yaml) #Store
       end
 
-      clean_yaml = Burek::Parser.yaml_to_i18n_file(translations_hash.to_yaml) 
-      puts clean_yaml
-      File.write(translation_file, clean_yaml) #Store
+      
     end
 
     # Replace all burek calls with regular translation calls
