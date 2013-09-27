@@ -9,6 +9,10 @@ module Burek
     locales: ['en','fi']
   }
 
+  def self.set_config(key, value)
+    @@config_hash[key] = value
+  end
+  
   def self.config(key)
     raise 'Unknown config key!' unless @@config_hash.has_key? key
     @@config_hash[key]
