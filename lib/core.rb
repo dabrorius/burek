@@ -56,9 +56,8 @@ module Burek
 
       to_replace = {}
       # Create files for each locale
-      Burek.config(:locales).each do |locale|      
+      Burek.config(:locales).each do |locale|    
         new_translations.each do |key,value|
-
           path_parts = key.split("/")
           item_name = path_parts.pop
           path_parts_no_filename = path_parts[0..-2]
@@ -88,6 +87,7 @@ module Burek
 
           # Save to file
           clean_yaml = Burek::Parser.yaml_to_i18n_file(translations_hash.to_yaml) 
+          translation_file.gsub!("//","/")
           File.write(translation_file, clean_yaml) #Store
         end
 

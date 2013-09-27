@@ -35,7 +35,12 @@ class BurekTesting < Test::Unit::TestCase
   def test_depth_0
     setup
     copy_example("test1.html.erb","/")
+    
     Burek::Core.run_burek
+
+    assert_translation_content "test1.en.yml", {'en' => { 'welcome' => 'Welcome' }}
+    assert_translation_content "test1.fi.yml", {'fi' => { 'welcome' => 'TODO' }}
+
     assert_file_contents(@views_folder + "/test1.html.erb", "<h1><%= t('welcome') %></h1>")
     teardown
   end
@@ -43,7 +48,12 @@ class BurekTesting < Test::Unit::TestCase
   def test_depth_1
     setup
     copy_example("test1.html.erb","/level1/")
+
     Burek::Core.run_burek
+
+    assert_translation_content "level1/test1.en.yml", {'en' => { 'level1' => {'welcome' => 'Welcome'} }}
+    assert_translation_content "level1/test1.fi.yml", {'fi' => { 'level1' => {'welcome' => 'TODO'} }}
+
     assert_file_contents(@views_folder + "/level1/test1.html.erb", "<h1><%= t('level1.welcome') %></h1>")
     teardown
   end
@@ -52,6 +62,10 @@ class BurekTesting < Test::Unit::TestCase
     setup
     copy_example("test1.html.erb","/level1/l2/")
     Burek::Core.run_burek
+
+    assert_translation_content "level1/l2/test1.en.yml", {'en' => { 'level1' => { 'l2' => {'welcome' => 'Welcome'}} }}
+    assert_translation_content "level1/l2/test1.fi.yml", {'fi' => { 'level1' => { 'l2' => {'welcome' => 'TODO'}} }}
+
     assert_file_contents(@views_folder + "/level1/l2/test1.html.erb", "<h1><%= t('level1.l2.welcome') %></h1>")
     teardown
   end
@@ -60,6 +74,10 @@ class BurekTesting < Test::Unit::TestCase
     setup
     copy_example("test1.html.erb","/level1/l2/l3/")
     Burek::Core.run_burek
+
+    assert_translation_content "level1/l2/l3.en.yml", {'en' => { 'level1' => { 'l2' => { 'l3' => {'welcome' => 'Welcome'}}} }}
+    assert_translation_content "level1/l2/l3.fi.yml", {'fi' => { 'level1' => { 'l2' => { 'l3' => {'welcome' => 'TODO'}}} }}
+
     assert_file_contents(@views_folder + "/level1/l2/l3/test1.html.erb", "<h1><%= t('level1.l2.l3.welcome') %></h1>")
     teardown
   end
@@ -78,6 +96,10 @@ class BurekTesting < Test::Unit::TestCase
     end
 
     FileUtils.cp(@examples_folder+example, @views_folder + target_folder + example)
+  end
+
+  def assert_translation_content(path, expected_content_hash)
+    assert_file_contents "#{@translations_folder}#{path}", Burek::Parser.yaml_to_i18n_file(expected_content_hash.to_yaml)
   end
 
   def assert_file_contents(path, expected_content)
