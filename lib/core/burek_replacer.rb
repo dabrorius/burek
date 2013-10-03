@@ -28,6 +28,5 @@ module Burek
       return contents if changes_made
     end
 
-
   end
 end
