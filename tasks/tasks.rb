@@ -1,6 +1,5 @@
 require 'yaml'
-require 'parser'
-require 'core'
+require 'core/core'
 require 'config'
 
 namespace :burek do

@@ -1,4 +1,4 @@
-require 'view_helpers'
+require 'rails/view_helpers'
 
 module Burek
   class Railtie < Rails::Railtie
