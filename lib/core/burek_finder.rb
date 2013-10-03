@@ -7,7 +7,7 @@ module Burek
     #
     # ==== Returns
     # Hash in whichs values represent burek call captions and keys represent locales file paths in which
-    # those captions should be saved
+    # those captions were found
     #
     def self.find_burek_calls_in_files
       new_translations = {}
