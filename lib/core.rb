@@ -33,26 +33,51 @@ module Burek
       return path.join('/')
     end
 
-    def self.run_burek
-      # Create translations folder if missing
-      unless File.directory?(Burek.config(:translations_path))
-        Dir.mkdir(Burek.config(:translations_path))
-      end
+    def self.create_folder_if_missing(path)
+      Dir.mkdir(path) unless File.directory?(path)
+    end
 
+    def self.find_burek_calls_in_files
       new_translations = {}
       # Iterate all defined subfolders subfolders
-      for_each_file do |file_name|      
-        File.open(file_name, "rb") do |file|
-          contents = file.read
-
-          filtered_path = Burek::Core.filter_path(file_name)
-          matches = Burek::Parser.find_burek_calls(contents)
-          matches.each do |value|
-            key = filtered_path + "/" + value.downcase.gsub(' ','_')
-            new_translations[key] = value
-          end
+      open_each_file do |contents, file_name|      
+        filtered_path = Burek::Core.filter_path(file_name)
+        matches = Burek::Parser.find_burek_calls(contents)
+        matches.each do |value|
+          key = filtered_path + "/" + value.downcase.gsub(' ','_')
+          new_translations[key] = value
         end
       end
+      return new_translations
+    end
+
+    def self.initialize_translations_hash(translation_file, locale)
+      if File.exists?(translation_file)
+        translations_hash = YAML::load_file(translation_file) #Load
+      else
+        translations_hash = {}
+        translations_hash[locale.dup.force_encoding("UTF-8")] = {} 
+      end
+      return translations_hash
+    end
+
+    def self.path_parts_to_key(path_parts, item_name)
+      regular_translation_key = path_parts.join('.') 
+      regular_translation_key += "." unless regular_translation_key.nil? || regular_translation_key.empty?
+      regular_translation_key += "#{item_name}"
+    end
+
+    def self.translations_hash_to_file(translations_hash, translation_file)
+      clean_yaml = Burek::Parser.yaml_to_i18n_file(translations_hash.to_yaml) 
+      translation_file.gsub!("//","/")
+      File.write(translation_file, clean_yaml) #Store
+    end
+
+    def self.run_burek
+      # Create translations folder if missing
+      create_folder_if_missing Burek.config(:translations_path)
+
+      new_translations = find_burek_calls_in_files
 
       to_replace = {}
       # Create files for each locale
@@ -65,19 +90,10 @@ module Burek
           # Figure out file path
           translation_file = Burek::Core.key_to_file_path(key, locale)
 
-          # Initialize translations hash
-          if File.exists?(translation_file)
-            translations_hash = YAML::load_file(translation_file) #Load
-          else
-            translations_hash = {}
-            translations_hash[locale.dup.force_encoding("UTF-8")] = {} 
-          end
+          translations_hash = initialize_translations_hash(translation_file, locale)
 
           # Save info for replacing burek calls with translation calls
-          regular_translation_key = path_parts_no_filename.join('.') 
-          regular_translation_key += "." unless regular_translation_key.nil? || regular_translation_key.empty?
-          regular_translation_key += "#{item_name}"
-          to_replace[value] = regular_translation_key
+          to_replace[value] = path_parts_to_key(path_parts_no_filename, item_name)
 
           # Nest in hashes
           cur_hash = translations_hash[locale.dup.force_encoding("UTF-8")]
@@ -88,24 +104,32 @@ module Burek
           cur_hash[item_name] = ( locale == Burek.config(:locales).first ? value.dup.force_encoding("UTF-8") : Burek.config(:translation_placeholder) )
 
           # Save to file
-          clean_yaml = Burek::Parser.yaml_to_i18n_file(translations_hash.to_yaml) 
-          translation_file.gsub!("//","/")
-          File.write(translation_file, clean_yaml) #Store
+          translations_hash_to_file(translations_hash, translation_file)
         end
 
         
       end
 
       # Replace all burek calls with regular translation calls
-      for_each_file do |file_name|      
-        File.open(file_name, 'r') do |file|
-          content = file.read
-          processed_content = Burek::Parser.replace_burek_calls(content, to_replace)
-          unless processed_content.nil?
-            File.open(file_name, 'w') do |output_file|
-              output_file.print processed_content
-            end
+      replace_burek_calls_in_files(to_replace)
+    end
+
+    def self.replace_burek_calls_in_files(to_replace)
+      open_each_file do |content,file_name|      
+        processed_content = Burek::Parser.replace_burek_calls(content, to_replace)
+        unless processed_content.nil?
+          File.open(file_name, 'w') do |output_file|
+            output_file.print processed_content
           end
+        end
+      end
+    end
+
+    def self.open_each_file 
+      for_each_file do |file_name|      
+        File.open(file_name, "rb") do |file|
+          contents = file.read
+          yield contents, file_name
         end
       end
     end

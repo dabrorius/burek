@@ -17,4 +17,5 @@ module Burek
     raise 'Unknown config key!' unless @@config_hash.has_key? key
     @@config_hash[key]
   end
+  
 end
