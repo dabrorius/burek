@@ -8,7 +8,7 @@ require 'file_helpers'
 module Burek
 
   module Core
-    
+
     # Main method in burek. It works in three steps:
     #
     # 1. find all burek calls within folders specified in config
@@ -23,6 +23,18 @@ module Burek
       Burek::Replacer.replace_burek_calls_in_files(to_replace)
     end
 
+    # A regex for finiding burek calls
+    # 
+    # It is used by Burek::Finder and Burek::Replacer.
+    # Example calls it can find
+    # * burek('Hello world')
+    # * burek("Hello world")
+    # * burek ( "Hello world" )
+    #
+    # ==== Attributes
+    # * +caption+ - Use it to find burek call with specific caption.
+    #               By default it will accept any string and capture it in group named 'key'.
+    #
     def self.burek_call_regex(caption="(?<key>[^\\)]*)")
       Regexp.new("[^a-zA-Z0-9_]burek[ \\t]*\\([ \\t]*('|\")#{caption}\('|\")[^\\)]*\\)")
     end
