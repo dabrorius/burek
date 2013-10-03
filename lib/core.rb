@@ -74,7 +74,9 @@ module Burek
           end
 
           # Save info for replacing burek calls with translation calls
-          regular_translation_key = path_parts_no_filename.join('.') + ".#{item_name}"
+          regular_translation_key = path_parts_no_filename.join('.') 
+          regular_translation_key += "." unless regular_translation_key.nil? || regular_translation_key.empty?
+          regular_translation_key += "#{item_name}"
           to_replace[value] = regular_translation_key
 
           # Nest in hashes
