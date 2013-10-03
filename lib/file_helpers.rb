@@ -20,5 +20,9 @@ module Burek
       end
     end
 
+    def self.create_folder_if_missing(path)
+      Dir.mkdir(path) unless File.directory?(path)
+    end
+
   end
 end
