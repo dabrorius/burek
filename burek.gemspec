@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.description = "Manage your translations the easy way."
   s.authors     = ["Filip Defar"]
   s.email       = 'dabrorius@gmail.com'
-  s.files       = ["lib/burek.rb","lib/config.rb","lib/core.rb","lib/parser.rb","lib/view_helpers.rb","tasks/tasks.rb"]
+  s.files       = Dir.glob("{tasks,lib}/**/*") + %w(README.md)
   s.homepage    =
     'https://github.com/dabrorius/burek'
   s.license       = 'MIT'

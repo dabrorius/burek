@@ -1,8 +1,8 @@
 require 'test/unit'
-require 'parser'
 require 'fileutils'
 require 'config'
-require 'core'
+require 'core/core'
+require 'core/locales_creator'
 
 class BurekTesting < Test::Unit::TestCase
 
@@ -99,7 +99,7 @@ class BurekTesting < Test::Unit::TestCase
   end
 
   def assert_translation_content(path, expected_content_hash)
-    assert_file_contents "#{@translations_folder}#{path}", Burek::Parser.yaml_to_i18n_file(expected_content_hash.to_yaml)
+    assert_file_contents "#{@translations_folder}#{path}", Burek::LocalesCreator.yaml_to_i18n_file(expected_content_hash.to_yaml)
   end
 
   def assert_file_contents(path, expected_content)
