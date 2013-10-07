@@ -1,12 +1,10 @@
 # burek
-====
 
 Burek is here to help you with your RoR translations. 
 
 ## How it works?
-====
 
-### 1. You call burek in your view files 
+### 1. Call burek in your view files 
 
 ```html
 # views/users/index.html
@@ -15,7 +13,7 @@ Burek is here to help you with your RoR translations.
 </h1>
 ```
 
-###  You fetch translations
+### 2. Fetch translations with burek rake task
 
 ```bash
 rake burek:fetch
@@ -49,4 +47,4 @@ It also replaces all burek calls with regular translation calls
 </h1>
 ```
 
-That's it! Cool isn't it?
+That's it!
