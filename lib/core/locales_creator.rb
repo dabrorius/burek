@@ -28,12 +28,12 @@ module Burek
           to_replace[value] = path_parts_to_key(path_parts_no_filename, item_name)
 
           # Nest in hashes
-          cur_hash = translations_hash[locale.dup.force_encoding("UTF-8")]
+          cur_hash = translations_hash[locale]
           path_parts_no_filename.each do |item|
             cur_hash[item] = {} unless cur_hash.has_key?(item)
             cur_hash = cur_hash[item]
           end
-          cur_hash[item_name] = ( locale == Burek.config(:locales).first ? value.dup.force_encoding("UTF-8") : Burek.config(:translation_placeholder) )
+          cur_hash[item_name] = ( locale == Burek.config(:locales).first ? value : Burek.config(:translation_placeholder) )
 
           # Save to file
           Burek::LocalesCreator.translations_hash_to_file(translations_hash, translation_file)
@@ -48,7 +48,9 @@ module Burek
     def self.translations_hash_to_file(translations_hash, translation_file)
       clean_yaml = yaml_to_i18n_file(translations_hash.to_yaml) 
       translation_file.gsub!("//","/")
-      File.write(translation_file, clean_yaml) #Store
+      File.open(translation_file, "w:UTF-8") do |f| 
+        f.write clean_yaml
+      end
     end
 
     # Removes a first line from a yaml file which is added to standard YAML files
@@ -65,7 +67,7 @@ module Burek
         translations_hash = YAML::load_file(translation_file) #Load
       else
         translations_hash = {}
-        translations_hash[locale.dup.force_encoding("UTF-8")] = {} 
+        translations_hash[locale] = {} 
       end
       return translations_hash
     end

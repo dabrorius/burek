@@ -3,7 +3,7 @@ module Burek
 
      def self.open_each_file 
       for_each_file do |file_name|      
-        File.open(file_name, "rb") do |file|
+        File.open(file_name, "rb:UTF-8") do |file|
           contents = file.read
           yield contents, file_name
         end
