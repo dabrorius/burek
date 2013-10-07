@@ -1,25 +1,28 @@
-burek
-=====
+# burek
+====
 
-Burek is here to help you with your RoR translations, this is how it works:
+Burek is here to help you with your RoR translations. 
 
-1. You call burek in your view files 
+## How it works?
+====
 
-```ruby
+### 1. You call burek in your view files 
+
+```html
 # views/users/index.html
 <h1>
   <%= burek("All users") %>
 </h1>
 ```
 
-2. You fetch translations
+###  You fetch translations
 
 ```bash
 rake burek:fetch
 ```
 
-3. Burek generates translation files for you
-If you defined you want to use en and fi locales, and en is your main locale burek generates following files
+### 3. Burek generates translation files for you.
+If you defined, for example, you want to use English and Finnish locales (and English is your main locale).
 
 ```ruby
 # config/locales/burek/views/users/index.en.yml
@@ -39,7 +42,7 @@ en:
 
 It also replaces all burek calls with regular translation calls
 
-```ruby
+```html
 # views/users/index.html
 <h1>
   <%= t("views.users.all_users") %>
