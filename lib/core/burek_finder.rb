@@ -24,7 +24,7 @@ module Burek
 
     # Sanitizes caption so that it can be used as key part
     def self.caption_to_key_part(caption)
-      caption.strip.gsub(/ +/,' ').downcase.split(' ')[0..3].join(' ')
+      caption.strip.gsub(/ +/,' ').downcase.gsub(/[^0-9a-z_ ]/i, '').split(' ')[0..3].join('_')
     end
 
 
