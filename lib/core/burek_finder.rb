@@ -15,11 +15,16 @@ module Burek
         filtered_path = filter_path(file_name)
         matches = find_burek_calls(contents)
         matches.each do |caption|
-          key = filtered_path + "/" + caption.downcase.gsub(' ','_')
+          key = filtered_path + "/" + caption_to_key_part(caption)
           new_translations[key] = caption
         end
       end
       return new_translations
+    end
+
+    # Sanitizes caption so that it can be used as key part
+    def self.caption_to_key_part(caption)
+      caption.strip.gsub(/ +/,' ').downcase.split(' ')[0..3].join(' ')
     end
 
 

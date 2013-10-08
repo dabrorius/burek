@@ -33,7 +33,7 @@ module Burek
             cur_hash[item] = {} unless cur_hash.has_key?(item)
             cur_hash = cur_hash[item]
           end
-          cur_hash[item_name] = ( locale == Burek.config.get(:locales).first ? value : Burek.config.get(:translation_placeholder) )
+          cur_hash[string_to_key(item_name)] = ( locale == Burek.config.get(:locales).first ? value : Burek.config.get(:translation_placeholder) )
 
           # Save to file
           Burek::LocalesCreator.translations_hash_to_file(translations_hash, translation_file)
@@ -72,13 +72,16 @@ module Burek
       return translations_hash
     end
 
+    def self.string_to_key(string)
+      string.split(' ')[0..3].join('_').downcase.gsub(/[^0-9a-z_]/i, '')
+    end
+
     # Creates a translation call key from path where burek call was found and burek call caption
     #
     def self.path_parts_to_key(path_parts, item_name)
       regular_translation_key = path_parts.join('.') 
       regular_translation_key += "." unless regular_translation_key.nil? || regular_translation_key.empty?
-      item_name_to_key = item_name.split(' ')[0..3].join('_').downcase.gsub(/[^0-9a-z_]/i, '')
-      regular_translation_key += "#{item_name_to_key}"
+      regular_translation_key += "#{string_to_key(item_name)}"
     end
 
     # Generates a file path to locales file from a file path where burek call was found.

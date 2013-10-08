@@ -41,18 +41,4 @@ class BurekTesting < Test::Unit::TestCase
     Burek::Replacer.replace_burek_calls("<%= burek('Something different') %>", {'Hello world' => 'views.main.hello_world'})
   end
 
-  def test_path_parts_to_key
-    assert_equal 'views.index.lorem_ipsum_dolor_sit',
-    Burek::LocalesCreator.path_parts_to_key(['views','index'], 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse tempor suscipit risus. Suspendisse molestie posuere augue a sollicitudin')
-  end
-
-  def test_path_parts_to_key_non_alphanum
-    assert_equal 'views.index.lorem_ipsum',
-    Burek::LocalesCreator.path_parts_to_key(['views','index'], 'Lorem: ipsum?')
-  end
-
-  def test_path_parts_to_key_multiple_spaces
-    assert_equal 'views.index.lorem_ipsum',
-    Burek::LocalesCreator.path_parts_to_key(['views','index'], ' Lorem   ipsum  ')
-  end
 end

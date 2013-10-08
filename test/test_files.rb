@@ -35,6 +35,19 @@ class BurekTesting < Test::Unit::TestCase
     end
   end
 
+  def test_big
+    setup
+    copy_example("test_big.html.erb","/")
+    
+    Burek::Core.run_burek
+
+    assert_translation_content "test_big.en.yml", {'en' => { 'lorem_ipsum_dolor_sit' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' }}
+    assert_translation_content "test_big.fi.yml", {'fi' => { 'lorem_ipsum_dolor_sit' => 'TODO' }}
+
+    assert_file_contents(@views_folder + "/test_big.html.erb", "<h1><%= t('lorem_ipsum_dolor_sit') %></h1>")
+    teardown
+  end
+
   def test_depth_0
     setup
     copy_example("test1.html.erb","/")
