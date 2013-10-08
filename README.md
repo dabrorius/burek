@@ -55,5 +55,24 @@ Just add following line to your Gemfile:
 ```ruby
 gem "burek"
 ```
+## How to configure it?
+You can use default configuration, if you want to override it create following file. You don't have to override all configuration variables, but I listed them all here with brief descriptions. 
+
+```ruby
+# config/initializers/burek.rb
+Burek.setup do |config|
+  config.search_folders = ['./app/views/**/*'] # Where should I look for burek calls?
+  config.translations_path = './config/locales/burek/' # Where should I generate translation files?
+  config.translation_placeholder = 'TODO' # What should I set as default translation for non-main languages
+  config.locales = ['en'] # What locales do you want to use? (NOTE: First locale is considered main)
+
+  # NOTE: Burek generates your translation keys depending on file path where burek call was found.
+  config.ignore_folders_for_key = ['.','app'] # What folders should be ignored when generating translation key
+
+  # NOTE: When generating locale files they are nested in subfolders that are generated from translation key
+  config.subfolder_depth = 2 # How deep should I nest translation files in subfolders?
+end
+```
+
 
 
