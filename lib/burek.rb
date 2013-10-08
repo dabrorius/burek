@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require 'rails/view_helpers'
 
 module Burek

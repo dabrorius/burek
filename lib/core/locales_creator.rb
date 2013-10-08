@@ -77,7 +77,8 @@ module Burek
     def self.path_parts_to_key(path_parts, item_name)
       regular_translation_key = path_parts.join('.') 
       regular_translation_key += "." unless regular_translation_key.nil? || regular_translation_key.empty?
-      regular_translation_key += "#{item_name}"
+      item_name_to_key = item_name.split(' ')[0..3].join('_').downcase.gsub(/[^0-9a-z_]/i, '')
+      regular_translation_key += "#{item_name_to_key}"
     end
 
     # Generates a file path to locales file from a file path where burek call was found.
