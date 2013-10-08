@@ -27,7 +27,6 @@ module Burek
       caption.strip.gsub(/ +/,' ').downcase.gsub(/[^0-9a-z_ ]/i, '').split(' ')[0..3].join('_')
     end
 
-
     # Finds burek calls in a string
     #
     # ==== Attributes
