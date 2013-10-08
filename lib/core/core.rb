@@ -16,11 +16,25 @@ module Burek
     # 3. replace all burek calls with regular translation calls
     #
     def self.run_burek
-      Burek::FileHelpers.create_folder_if_missing Burek.config(:translations_path)
+      Burek::FileHelpers.create_folder_if_missing Burek.config.get(:translations_path)
 
+      puts "Searching for burek calls..."
       new_translations = Burek::Finder.find_burek_calls_in_files
+      if new_translations.any?
+        new_translations.each do |file, caption|
+          puts "\t-> Found '#{caption}' in '#{file}'"
+        end
+      else
+        puts "No burek calls found!"
+      end
+      
+      puts "Adding translations to locale filess..."
       to_replace = Burek::LocalesCreator.create_locales(new_translations)
+      
+      puts "Repalcing burek calls with translation calls..."
       Burek::Replacer.replace_burek_calls_in_files(to_replace)
+
+      puts "DONE!"
     end
 
     # A regex for finiding burek calls

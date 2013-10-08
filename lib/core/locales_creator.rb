@@ -14,7 +14,7 @@ module Burek
     def self.create_locales(new_translations)
       to_replace = {}
       # Create files for each locale
-      Burek.config(:locales).each do |locale|    
+      Burek.config.get(:locales).each do |locale|    
         new_translations.each do |key,value|
           path_parts = key.split("/")
           item_name = path_parts.pop
@@ -33,7 +33,7 @@ module Burek
             cur_hash[item] = {} unless cur_hash.has_key?(item)
             cur_hash = cur_hash[item]
           end
-          cur_hash[item_name] = ( locale == Burek.config(:locales).first ? value : Burek.config(:translation_placeholder) )
+          cur_hash[item_name] = ( locale == Burek.config.get(:locales).first ? value : Burek.config.get(:translation_placeholder) )
 
           # Save to file
           Burek::LocalesCreator.translations_hash_to_file(translations_hash, translation_file)
@@ -98,9 +98,9 @@ module Burek
       path_parts = key.split("/")
       path_parts.pop
 
-      translation_file = Burek.config(:translations_path) 
+      translation_file = Burek.config.get(:translations_path) 
       path_parts.each_with_index do |item, index|
-        if index == Burek.config(:subfolder_depth) || item == path_parts.last
+        if index == Burek.config.get(:subfolder_depth) || item == path_parts.last
           translation_file += "#{item}.#{locale}.yml"
           break
         else

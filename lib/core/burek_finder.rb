@@ -46,7 +46,7 @@ module Burek
     def self.filter_path(file_name)
       path = file_name.split('/')
       path.delete_if do |item|
-        Burek.config(:ignore_folders_for_key).include? item
+        Burek.config.get(:ignore_folders_for_key).include? item
       end
       path.last.gsub!(/\.(.*?)$/,'').gsub!(/^_/,'') #strip extenison from file name
       return path.join('/')

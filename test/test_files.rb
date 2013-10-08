@@ -21,9 +21,12 @@ class BurekTesting < Test::Unit::TestCase
     Dir.mkdir(@translations_folder)
 
     # Set config variables
-    Burek.set_config :search_folders, [@views_folder+"**/*"]
-    Burek.set_config :translations_path, @translations_folder
-    Burek.set_config :ignore_folders_for_key, ['.','temp','views']
+    Burek.setup do |config|
+      config.search_folders = [@views_folder+"**/*"]
+      config.translations_path = @translations_folder
+      config.ignore_folders_for_key = ['.','temp','views']
+      config.locales = ['en','fi']
+    end
   end
 
   def teardown

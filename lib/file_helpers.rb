@@ -11,7 +11,7 @@ module Burek
     end
 
     def self.for_each_file
-      Burek.config(:search_folders).each do |folder|
+      Burek.config.get(:search_folders).each do |folder|
         Dir.glob(folder) do |file_name|
           unless File.directory?(file_name)
              yield file_name

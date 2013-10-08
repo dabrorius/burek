@@ -1,21 +1,47 @@
+require 'yaml'
+
 module Burek
 
-  @@config_hash = {
+  class BurekConfiguration
+    def initialize(hash)
+      @hash = hash
+    end
+
+    def hash
+      @hash
+    end
+
+    def get(key)
+      hash[key]
+    end
+
+    def method_missing(m, *args, &block)
+      key = m.to_s.gsub('=','').to_sym
+      raise 'Unknown config key!' unless @hash.has_key? key
+      @hash[key] = args.first
+    end
+  end
+
+  @@configuration = BurekConfiguration.new({
     search_folders: ['./app/views/**/*'],
     translations_path: './config/locales/burek/',
     translation_placeholder: 'TODO',
     ignore_folders_for_key: ['.','app'],
     subfolder_depth: 2,
-    locales: ['en','fi']
-  }
+    locales: ['en']
+  })
 
-  def self.set_config(key, value)
-    @@config_hash[key] = value
+  def self.setup
+    yield @@configuration
   end
-  
-  def self.config(key)
-    raise 'Unknown config key!' unless @@config_hash.has_key? key
-    @@config_hash[key]
+
+  def self.configuration
+    @@configuration
+  end
+
+  def self.config
+    configuration
   end
   
 end
+
