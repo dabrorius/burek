@@ -1,5 +1,6 @@
 # encoding: UTF-8
 require 'rails/view_helpers'
+require 'burek/core'
 
 module Burek
   class Railtie < Rails::Railtie
