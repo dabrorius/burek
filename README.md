@@ -1,6 +1,6 @@
 # burek
 
-Burek is here to help you with your RoR translations. 
+Burek is here to help you with your RoR translations. It's not here to replace rails translation, but to help you manage them. In the end *all* burek calls are replaced with regular translation calls.
 
 ## How it works?
 
@@ -48,3 +48,12 @@ It also replaces all burek calls with regular translation calls
 ```
 
 That's it!
+
+## How to install it?
+
+Just add following line to your Gemfile:
+```ruby
+gem "burek"
+```
+
+
