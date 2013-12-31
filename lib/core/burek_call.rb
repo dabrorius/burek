@@ -1,11 +1,11 @@
 module Burek
   class BurekCall
 
-    def initialize(translation, options)
+    def initialize(translation, options={})
       if translation.is_a?(Hash)
         @translation = translation
       else
-        @translation[default_locale] = translation
+        @translation = {default_locale => translation }
       end
       @key = options[:key] || key_from_translation
       @parent_key = options[:parent_key]

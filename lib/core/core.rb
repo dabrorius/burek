@@ -39,13 +39,16 @@ module Burek
       string.scan(self.burek_call_params_regex).flatten
     end
 
+    def self.burek_call_from_params_string(params)
+      call = "BurekCall.new(#{params})"
+      eval call
+    end
+
+    private
+
     # A regex for finiding burek calls
     def self.burek_call_params_regex
       /burek *\(([^\)]*)\)/
-    end
-
-    def self.burek_params_to_call(params)
-      eval "BurekCall.new #{params}"
     end
     
   end
