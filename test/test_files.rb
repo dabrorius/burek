@@ -42,6 +42,17 @@ class BurekTesting < Test::Unit::TestCase
     assert_equal 'Goodbye', translation_hash['en']['homepage']['bye']
   end
 
+  def test_translation_writing
+    translation_hash = {'en'=>{"root_translation"=>"Root translation", "hi"=>{"hello_world"=>"Hello world"}, "tree"=>{"nest"=>{"nested_translation"=>"Nested translation"}}}}
+    output_file = @translations_folder + 'out.en.yml'
+    Burek::Core.translations_hash_to_file(translation_hash, output_file)
+    File.open(output_file, "r") do |file|
+      content = file.read
+      puts content
+      assert_equal "en:\n  root_translation: Root translation\n  hi:\n    hello_world: Hello world\n  tree:\n    nest:\n      nested_translation: Nested translation\n", content
+    end
+  end
+
 =begin
 
   def test_big
