@@ -2,7 +2,7 @@ module Burek
 
   module ViewHelpers
     def burek(key)
-      raw "<span class='translation_missing'>#{key}</span>"
+      raw "<span style='background-color:red;'>#{key}</span>"
     end
   end
 
