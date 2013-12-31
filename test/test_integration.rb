@@ -2,7 +2,6 @@ require 'test/unit'
 require 'fileutils'
 require 'config'
 require 'core/core'
-require 'core/locales_creator'
 
 class BurekTesting < Test::Unit::TestCase
 
@@ -36,18 +35,23 @@ class BurekTesting < Test::Unit::TestCase
   end
 
   def test_translation_loading
-    translation_hash = Burek::Core.initialize_translations_hash(@examples_folder + 'burek.en.yml', :en)
+    translations = Burek::TranslationsStore.new
+    translations.load_locale(:en, "#{@examples_folder}burek.en.yml")
+    translation_hash = translations.get_hash
     assert_equal 'Root translation', translation_hash['en']['root_translation']
     assert_equal 'Welcome home', translation_hash['en']['homepage']['welcome']
     assert_equal 'Goodbye', translation_hash['en']['homepage']['bye']
   end
 
   def test_translation_writing
-    translation_hash = {'en'=>{"root_translation"=>"Root translation", "hi"=>{"hello_world"=>"Hello world"}, "tree"=>{"nest"=>{"nested_translation"=>"Nested translation"}}}}
+    translations_hash = {'en'=>{"root_translation"=>"Root translation", "hi"=>{"hello_world"=>"Hello world"}, "tree"=>{"nest"=>{"nested_translation"=>"Nested translation"}}}}
     output_file = @translations_folder + 'out.en.yml'
-    Burek::Core.translations_hash_to_file(translation_hash, output_file)
+
+    translations = Burek::TranslationsStore.new(translations_hash)
+    translations.save_locale(:en, output_file)
     File.open(output_file, "r") do |file|
       content = file.read
+      puts "CONTENT"
       puts content
       assert_equal "en:\n  root_translation: Root translation\n  hi:\n    hello_world: Hello world\n  tree:\n    nest:\n      nested_translation: Nested translation\n", content
     end
@@ -83,7 +87,7 @@ class BurekTesting < Test::Unit::TestCase
   end
 
   def assert_translation_content(path, expected_content_hash)
-    assert_file_contents "#{@translations_folder}#{path}", Burek::LocalesCreator.yaml_to_i18n_file(expected_content_hash.to_yaml)
+    assert_file_contents "#{@translations_folder}#{path}", expected_content_hash.to_yaml.lines.to_a[1..-1].join
   end
 
   def assert_file_contents(path, expected_content)
