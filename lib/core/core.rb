@@ -17,23 +17,35 @@ module Burek
       Burek::FileHelpers.create_folder_if_missing Burek.config.get(:translations_path)
 
       puts "Searching for burek calls..."
-      new_translations = Burek::Finder.find_burek_calls_in_files
-      if new_translations.any?
-        new_translations.each do |file, caption|
-          puts "\t-> Found '#{caption}' in '#{file}'"
+      
+      Burek::FileHelpers.open_each_file do |contents, file_name|      
+        matches = fetch_params_from_string(contents)
+        matches.each do |call_params|
+          call = burek_call_from_params_string call_params
+          store_burek_call_to_locale_file call
+          puts "REGEX #{burek_call_params_regex(call.translation)}"
+          contents.gsub!(burek_call_params_regex(call_params),"t('#{call.full_key}')")           
         end
-      else
-        puts "No burek calls found!"
+        puts "=== === === ==="
+        puts contents
+        File.open(file_name, "w:UTF-8") do |f| 
+          f.write contents
+        end
       end
-      
-      puts "Adding translations to locale filess..."
-      to_replace = Burek::LocalesCreator.create_locales(new_translations)
-      
-      puts "Repalcing burek calls with translation calls..."
-      Burek::Replacer.replace_burek_calls_in_files(to_replace)
 
       puts "DONE!"
     end
+
+    def self.store_burek_call_to_locale_file(call)
+      Burek.config.get(:locales).each do |locale|
+        filename = "burek.#{locale}.yml"
+        file_path = Burek.config.get(:translations_path) + filename
+        translation_hash = initialize_translations_hash(file_path, locale)
+        add_to_translation_hash locale, [call], translation_hash
+        translations_hash_to_file translation_hash, file_path
+      end 
+    end
+
 
     # Intializes a translation hash by either loading existing translation file
     # or creating a hash that contains an empty hash under key which is name of current locale.
@@ -87,8 +99,8 @@ module Burek
     private
 
     # A regex for finiding burek calls
-    def self.burek_call_params_regex
-      /burek *\(([^\)]*)\)/
+    def self.burek_call_params_regex(caption='([^\)]*)')
+      /burek *\(#{caption}\)/
     end
     
   end

@@ -53,6 +53,46 @@ class BurekTesting < Test::Unit::TestCase
     end
   end
 
+  def test_depth_0
+    setup
+    copy_example("test1.html.erb","/")
+    
+    Burek::Core.run_burek
+
+    assert_translation_content "burek.en.yml", {'en' => { 'welcome' => 'Welcome' }}
+    assert_translation_content "burek.fi.yml", {'fi' => { 'welcome' => 'TODO' }}
+
+    assert_file_contents(@views_folder + "/test1.html.erb", "<h1><%= t('welcome') %></h1>")
+    teardown
+  end
+
+  def copy_example(example, target_folder)
+    target = "" if target_folder == "/"
+
+    # Create folders if target is nested
+    target_folder_parts = target_folder.split("/")
+    current_folder = @views_folder
+    target_folder_parts.each do |folder|
+      current_folder += "#{folder}/"
+      unless File.directory?(current_folder)
+        Dir.mkdir(current_folder)
+      end
+    end
+
+    FileUtils.cp(@examples_folder+example, @views_folder + target_folder + example)
+  end
+
+  def assert_translation_content(path, expected_content_hash)
+    assert_file_contents "#{@translations_folder}#{path}", Burek::LocalesCreator.yaml_to_i18n_file(expected_content_hash.to_yaml)
+  end
+
+  def assert_file_contents(path, expected_content)
+    File.open(path, "rb") do |file|
+      content = file.read
+      assert_equal expected_content, content
+    end
+  end
+
 =begin
 
   def test_big
@@ -68,18 +108,6 @@ class BurekTesting < Test::Unit::TestCase
     teardown
   end
 
-  def test_depth_0
-    setup
-    copy_example("test1.html.erb","/")
-    
-    Burek::Core.run_burek
-
-    assert_translation_content "test1.en.yml", {'en' => { 'welcome' => 'Welcome' }}
-    assert_translation_content "test1.fi.yml", {'fi' => { 'welcome' => 'TODO' }}
-
-    assert_file_contents(@views_folder + "/test1.html.erb", "<h1><%= t('welcome') %></h1>")
-    teardown
-  end
 
   def test_depth_1
     setup
@@ -118,32 +146,7 @@ class BurekTesting < Test::Unit::TestCase
     teardown
   end
 
-  def copy_example(example, target_folder)
-    target = "" if target_folder == "/"
 
-    # Create folders if target is nested
-    target_folder_parts = target_folder.split("/")
-    current_folder = @views_folder
-    target_folder_parts.each do |folder|
-      current_folder += "#{folder}/"
-      unless File.directory?(current_folder)
-        Dir.mkdir(current_folder)
-      end
-    end
-
-    FileUtils.cp(@examples_folder+example, @views_folder + target_folder + example)
-  end
-
-  def assert_translation_content(path, expected_content_hash)
-    assert_file_contents "#{@translations_folder}#{path}", Burek::LocalesCreator.yaml_to_i18n_file(expected_content_hash.to_yaml)
-  end
-
-  def assert_file_contents(path, expected_content)
-    File.open(path, "rb") do |file|
-      content = file.read
-      assert_equal expected_content, content
-    end
-  end
 =end
 
 end

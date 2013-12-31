@@ -29,6 +29,14 @@ module Burek
       @parent_key
     end
 
+    def full_key
+      if parent_key.nil? || parent_key.length == 0
+        key
+      else
+        parent_key + "." + key
+      end
+    end
+
     def parent_key_array
       @parent_key.split('.')
     end
