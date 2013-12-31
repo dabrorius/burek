@@ -1,10 +1,24 @@
 require 'test/unit'
 require 'core/core'
-require 'core/burek_replacer'
-require 'core/burek_finder'
+
 
 class BurekTesting < Test::Unit::TestCase
 
+  def test_fetch_params_from_string
+    # Single call
+    assert_equal ["'Hello world'"], Burek::Core.fetch_params_from_string("burek('Hello world')")
+
+    # Multiple calls
+    assert_equal ["'Hello world'",'"Bye world"'], Burek::Core.fetch_params_from_string("burek('Hello world') burek(\"Bye world\")")
+  
+    # With whitespace
+    assert_equal ["'Hello world'"], Burek::Core.fetch_params_from_string("burek  ('Hello world')")
+
+    # With options params
+    assert_equal ["'Hello world', {key: 'hi'}"], Burek::Core.fetch_params_from_string("burek('Hello world', {key: 'hi'})")
+  end
+
+=begin
   def test_simple_burek_call_double_quotes
     assert_equal ['Hello world'], Burek::Finder.find_burek_calls("<%= burek('Hello world') %>")
   end
@@ -40,5 +54,5 @@ class BurekTesting < Test::Unit::TestCase
     assert_equal nil, 
     Burek::Replacer.replace_burek_calls("<%= burek('Something different') %>", {'Hello world' => 'views.main.hello_world'})
   end
-
+=end
 end

@@ -1,8 +1,6 @@
 require 'config'
 require 'yaml'
-require 'core/burek_replacer'
-require 'core/burek_finder'
-require 'core/locales_creator'
+require 'core/burek_call'
 require 'file_helpers'
 
 module Burek
@@ -37,20 +35,17 @@ module Burek
       puts "DONE!"
     end
 
+    def self.fetch_params_from_string(string)
+      string.scan(self.burek_call_params_regex).flatten
+    end
+
     # A regex for finiding burek calls
-    # 
-    # It is used by Burek::Finder and Burek::Replacer.
-    # Example calls it can find
-    # * burek('Hello world')
-    # * burek("Hello world")
-    # * burek ( "Hello world" )
-    #
-    # ==== Attributes
-    # * +caption+ - Use it to find burek call with specific caption.
-    #               By default it will accept any string and capture it in group named 'key'.
-    #
-    def self.burek_call_regex(caption="(?<key>[^\\)]*)")
-      Regexp.new("[^a-zA-Z0-9_]burek[ \\t]*\\([ \\t]*('|\")#{caption}\('|\")[^\\)]*\\)")
+    def self.burek_call_params_regex
+      /burek *\(([^\)]*)\)/
+    end
+
+    def self.burek_params_to_call(params)
+      eval "BurekCall.new #{params}"
     end
     
   end

@@ -5,7 +5,7 @@ require 'core/core'
 require 'core/locales_creator'
 
 class BurekTesting < Test::Unit::TestCase
-
+=begin
   def setup
     @temp_folder = "./temp/"
     @examples_folder = "./test/examples/"
@@ -124,6 +124,6 @@ class BurekTesting < Test::Unit::TestCase
       assert_equal expected_content, content
     end
   end
-
+=end
 
 end
