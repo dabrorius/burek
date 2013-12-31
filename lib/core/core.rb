@@ -35,6 +35,29 @@ module Burek
       puts "DONE!"
     end
 
+    # Intializes a translation hash by either loading existing translation file
+    # or creating a hash that contains an empty hash under key which is name of current locale.
+    def self.initialize_translations_hash(translation_file, locale)
+      if File.exists?(translation_file)
+        translations_hash = YAML::load_file(translation_file) #Load
+      else
+        translations_hash = {}
+        translations_hash[locale] = {} 
+      end
+      return translations_hash
+    end
+
+    # Stores a translation hash in to a file
+    #
+    def self.translations_hash_to_file(translations_hash, translation_file)
+      yaml = translations_hash.to_yaml
+      clean_yaml = yaml.lines.to_a[1..-1].join # Remove first line from YAML
+      translation_file.gsub!("//","/")
+      File.open(translation_file, "w:UTF-8") do |f| 
+        f.write clean_yaml
+      end
+    end
+
     def self.add_to_translation_hash(locale, calls, translations_hash={})
       locale = locale.to_s # if it was symbol
       # Initialize hash for current locale

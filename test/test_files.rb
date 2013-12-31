@@ -5,7 +5,7 @@ require 'core/core'
 require 'core/locales_creator'
 
 class BurekTesting < Test::Unit::TestCase
-=begin
+
   def setup
     @temp_folder = "./temp/"
     @examples_folder = "./test/examples/"
@@ -34,6 +34,15 @@ class BurekTesting < Test::Unit::TestCase
       FileUtils.rm_rf(@temp_folder)
     end
   end
+
+  def test_translation_loading
+    translation_hash = Burek::Core.initialize_translations_hash(@examples_folder + 'burek.en.yml', :en)
+    assert_equal 'Root translation', translation_hash['en']['root_translation']
+    assert_equal 'Welcome home', translation_hash['en']['homepage']['welcome']
+    assert_equal 'Goodbye', translation_hash['en']['homepage']['bye']
+  end
+
+=begin
 
   def test_big
     setup
