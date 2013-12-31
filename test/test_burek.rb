@@ -35,6 +35,36 @@ class BurekTesting < Test::Unit::TestCase
     assert_equal 'hi', call.key
   end
 
+  def test_add_to_translation_hash
+    # Add new translations
+    calls_list = []
+    calls_list.push Burek::BurekCall.new('Root translation' )
+    calls_list.push Burek::BurekCall.new('Hello world', {parent_key: 'hi'} )
+    calls_list.push Burek::BurekCall.new('Nested translation', {parent_key: 'tree.nest'} )
+
+    translation_hash = Burek::Core.add_to_translation_hash(:en, calls_list)
+
+    assert_equal 'Root translation', translation_hash['en']['root_translation']
+    assert_equal 'Hello world', translation_hash['en']['hi']['hello_world']
+    assert_equal 'Nested translation', translation_hash['en']['tree']['nest']['nested_translation']
+
+    # Add translations to existing hash
+    calls_list = []
+    calls_list.push Burek::BurekCall.new('New root' )
+    calls_list.push Burek::BurekCall.new('Bye world', {parent_key: 'hi'} )
+
+    translation_hash = Burek::Core.add_to_translation_hash(:en, calls_list, translation_hash)
+
+
+    # check if old translations are ok
+    assert_equal 'Root translation', translation_hash['en']['root_translation']
+    assert_equal 'Hello world', translation_hash['en']['hi']['hello_world']
+    assert_equal 'Nested translation', translation_hash['en']['tree']['nest']['nested_translation']
+
+    assert_equal 'New root', translation_hash['en']['new_root']
+    assert_equal 'Bye world', translation_hash['en']['hi']['bye_world']
+  end
+
 =begin
   def test_simple_burek_call_double_quotes
     assert_equal ['Hello world'], Burek::Finder.find_burek_calls("<%= burek('Hello world') %>")

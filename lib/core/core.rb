@@ -35,6 +35,23 @@ module Burek
       puts "DONE!"
     end
 
+    def self.add_to_translation_hash(locale, calls, translations_hash={})
+      locale = locale.to_s # if it was symbol
+      # Initialize hash for current locale
+      translations_hash[locale] = {} unless translations_hash.has_key?(locale)
+
+      calls.each do |call|
+        cur_hash = translations_hash[locale]
+        call.parent_key_array.each do |item|
+          cur_hash[item] = {} unless cur_hash.has_key?(item)
+          cur_hash = cur_hash[item]
+        end
+        cur_hash[call.key] = call.translation(locale)
+      end
+
+      return translations_hash
+    end
+
     def self.fetch_params_from_string(string)
       string.scan(self.burek_call_params_regex).flatten
     end

@@ -8,11 +8,12 @@ module Burek
         @translation = {default_locale => translation }
       end
       @key = options[:key] || key_from_translation
-      @parent_key = options[:parent_key]
+      @parent_key = options[:parent_key] || ''
     end
 
     def translation(locale=nil)
       locale ||= default_locale
+      locale = locale.to_s
       if @translation.has_key?(locale)
         return @translation[locale]
       else
@@ -22,6 +23,14 @@ module Burek
 
     def key
       @key
+    end
+
+    def parent_key
+      @parent_key
+    end
+
+    def parent_key_array
+      @parent_key.split('.')
     end
 
     private
