@@ -24,7 +24,7 @@ module Burek
 
   @@configuration = BurekConfiguration.new({
     search_folders: ['./app/views/**/*'],
-    translations_path: './config/locales/burek/',
+    translations_path: './config/locales/',
     translation_placeholder: 'TODO',
     ignore_folders_for_key: ['.','app'],
     subfolder_depth: 2,
