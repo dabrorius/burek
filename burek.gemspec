@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'burek'
-  s.version     = '1.0.0-beta'
+  s.version     = '0.6.0'
   s.date        = '2014-09-20'
   s.summary     = "Manage your translations the easy way."
   s.description = "Manage your translations the easy way."
