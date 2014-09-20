@@ -25,17 +25,13 @@ If you defined, for example, you want to use English and Finnish locales (and En
 ```ruby
 # config/locales/burek/views/users/index.en.yml
 en:
-  views:
-    users:
-      all_users: All users
+  all_users: All users
 ```
 
 ```ruby
 # config/locales/burek/views/users/index.fi.yml
 en:
-  views:
-    users:
-      all_users: TODO
+  all_users: TODO
 ```
 
 It also replaces all burek calls with regular translation calls
@@ -43,11 +39,39 @@ It also replaces all burek calls with regular translation calls
 ```html
 # views/users/index.html
 <h1>
-  <%= t("views.users.all_users") %>
+  <%= t("all_users") %>
 </h1>
 ```
 
 That's it!
+
+## Additional options
+
+You can also pass a hash as second argument to burek call.
+
+```html
+# views/users/index.html
+<h1>
+  <%= burek("All users", {key: 'users', parent_key: 'levelone.leveltwo'}) %>
+</h1>
+```
+
+This call will generate following translation file:
+
+```ruby
+# config/locales/burek/views/users/index.fi.yml
+en:
+  levelone:
+    leveltwo:
+      users: "All users"
+```
+
+```html
+# views/users/index.html
+<h1>
+  <%= t("levelone.leveltwo.users") %>
+</h1>
+```
 
 ## How to install it?
 
