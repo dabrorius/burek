@@ -25,7 +25,9 @@ module Burek
     def push_call(call)
 
       Burek.config.get(:locales).each do |locale|
-        locale = locale.to_s # if it was symbol
+        # In case it's a symbole convert it to string
+        locale = locale.to_s
+        
         # Initialize hash for current locale
         @translations_hash[locale] = {} unless @translations_hash.has_key?(locale)
 

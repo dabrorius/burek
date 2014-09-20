@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'burek'
   s.version     = '0.5.9'
-  s.date        = '2013-09-25'
+  s.date        = '2014-09-20'
   s.summary     = "Manage your translations the easy way."
   s.description = "Manage your translations the easy way."
   s.authors     = ["Filip Defar"]
