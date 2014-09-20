@@ -1,9 +1,9 @@
-require 'test/unit'
+require 'minitest/autorun'
 require 'fileutils'
 require 'config'
 require 'core/core'
 
-class BurekTesting < Test::Unit::TestCase
+class BurekTesting < Minitest::Test
 
   def setup
     @temp_folder = "./temp/"

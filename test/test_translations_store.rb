@@ -1,8 +1,8 @@
-require 'test/unit'
+require 'minitest/autorun'
 require 'core/core'
 
 
-class BurekTesting < Test::Unit::TestCase
+class BurekTesting < Minitest::Test
 
   def test_add_to_translation_hash
     # Add new translations
