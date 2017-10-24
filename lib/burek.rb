@@ -5,7 +5,7 @@ require 'core/core'
 module Burek
   class Railtie < Rails::Railtie
     initializer "view_helpers" do
-      ActionView::Base.send :include, ViewHelpers
+      ActionView::Base.send :include, Burek::ViewHelpers.choose
     end
 
     rake_tasks do

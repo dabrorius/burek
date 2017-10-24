@@ -28,7 +28,8 @@ module Burek
     translation_placeholder: 'TODO',
     ignore_folders_for_key: ['.','app'],
     subfolder_depth: 2,
-    locales: ['en']
+    locales: ['en'],
+    highlight_missing_translations: true,
   })
 
   def self.setup
