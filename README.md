@@ -92,6 +92,7 @@ Burek.setup do |config|
   config.translations_path = './config/locales/' # Where should I generate translation files?
   config.translation_placeholder = 'TODO' # What should I set as default translation for non-main languages
   config.locales = ['en'] # What locales do you want to use? (NOTE: First locale is considered main)
+  config.highlight_missing_translations = false  # Disable/enable the highlighting on an element where Burek is used (default: true)
 end
 ```
 
